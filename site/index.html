@@ -148,7 +148,7 @@
 @media (min-width: 1280px) and (max-height: 800px) { #how .panel { --p-h: 268px; } }
 
 /* ------------------------------------------------ the page's rhythm: fixed spacing, never the window's height */
-:root { --sp: 48px; }
+:root { --sp: 48px; scroll-padding-top: calc(var(--nav) + 24px); }
 @media (max-width: 639px) { :root { --sp: 36px; } }
 :root main > :is(section, .section), :root footer.closing {
   height: auto; min-height: 0; padding: var(--sp) 0;
@@ -248,11 +248,6 @@ footer.closing.mw-foot { position: relative; overflow: hidden; isolation: isolat
               <a href="#how">Three steps<span>Pick, adjust, run</span></a>
               <a href="#canvas">Node canvas<span>One node per mockup</span></a>
               <a href="#profiles">Mockup profiles<span>Defaults saved per PSD</span></a>
-            </div>
-            <div class="menu-col span-3">
-              <p class="t-label">Output</p>
-              <a href="#results">Results<span>4000 × 3000 PNG files</span></a>
-              <a href="#engine">Engine<span>What it renders from a PSD</span></a>
             </div>
           </div>
         </div>
@@ -530,7 +525,7 @@ footer.closing.mw-foot { position: relative; overflow: hidden; isolation: isolat
   <div class="wrap">
     <div class="closing__cta">
       <div class="section-head--split">
-        <div><h2 id="close-h">Get Mockup Workflow 1.0.0</h2><p class="t-lead">Free for macOS. Unzip it, drag it to Applications, open it.</p></div>
+        <div><h2 id="close-h">Get Mockup Workflow</h2><p class="t-lead">Free for macOS. Unzip it, drag it to Applications, open it.</p></div>
         <a class="btn btn--primary" href="https://github.com/juanmapd/mockup-workflow/releases/download/v1.0.0/Mockup-Workflow-1.0.0-macOS.zip">Download for Mac<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
       </div>
     </div>
@@ -545,7 +540,7 @@ footer.closing.mw-foot { position: relative; overflow: hidden; isolation: isolat
         <div class="span-2 footer__col"><h3>Project</h3><ul><li><a href="https://github.com/juanmapd/mockup-workflow">Source code</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/releases/tag/v1.0.0">Release 1.0.0</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/blob/main/CHANGELOG.md">Changelog</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/issues">Issues</a></li></ul></div>
       </div>
       <div class="footer__legal">
-        <span>&copy; 2026 Juanma PD &nbsp; MIT license</span>
+        <span>Made by JuanmaPD in Canary Islands with love – MIT license, &copy; 2026 Juanma PD</span>
         <div class="socials"></div>
         <span>Product names and logos are trademarks of their owners</span>
       </div>
@@ -570,6 +565,23 @@ footer.closing.mw-foot { position: relative; overflow: hidden; isolation: isolat
     stage.style.setProperty('--p', (1 - Math.pow(1 - p, 2)).toFixed(4)); };
   addEventListener('scroll', () => { raf ||= requestAnimationFrame(run); }, { passive: true });
   addEventListener('resize', run); run();
+})();
+/* in-page links: a quick eased scroll that stops clear of the fixed header */
+(() => {
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const gap = () => (document.querySelector('.nav__bar')?.getBoundingClientRect().bottom || 72) + 24;
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    const id = a.getAttribute('href'); const t = id.length > 1 ? document.querySelector(id) : null; if (!t) return;
+    e.preventDefault();
+    const from = scrollY, to = id === '#top' ? 0 : Math.max(0, t.getBoundingClientRect().top + from - gap());
+    history.pushState(null, '', id);
+    if (still.matches || document.hidden) { scrollTo(0, to); return; }
+    const d = Math.min(650, 300 + Math.abs(to - from) / 12), t0 = performance.now();
+    const step = now => { const k = Math.min(1, (now - t0) / d), ease = 1 - Math.pow(1 - k, 3);
+      scrollTo(0, from + (to - from) * ease); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
 })();
 /* footer: the name set exactly across the page */
 (() => {
