@@ -1,0 +1,24 @@
+# Environment and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Builds and packages
+build/
+dist/
+releases/
+assets/icon.iconset/
+
+# User data: lives in the working folder, not in the code
+data/
+Mockup Gallery/
+Flows/
+# Folder names used before 1.0.0
+Galería de mockups/
+Flujos/
+
+# System and local tools
+.DS_Store
+.claude/
+.impeccable/

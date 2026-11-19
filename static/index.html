@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mockup Workflow</title>
+  <script>
+    // Theme before first paint, to avoid a light flash in dark mode.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('mw-theme') || localStorage.getItem('ms-theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/icon.png">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div id="splash" aria-hidden="true">
+    <svg class="splash-mark" viewBox="0 0 24 24" role="presentation">
+      <polygon class="g2" points="3,16.5 6.2,14.9 12,17.8 17.8,14.9 21,16.5 12,21"/><polygon class="g1" points="3,12 6.2,10.4 12,13.3 17.8,10.4 21,12 12,16.5"/><polygon class="g0" points="3,7.5 12,3 21,7.5 12,12"/>
+    </svg>
+    <div class="splash-name">Mockup Workflow</div>
+  </div>
+  <header class="topbar">
+    <div class="brand">
+      <button class="brand-mark" id="btn-about" type="button" title="About Mockup Workflow" aria-label="About Mockup Workflow"><span data-icon="logo"></span></button>
+      <div class="brand-text">
+        <input id="title" class="title-input" aria-label="Workflow name" value="Untitled workflow" maxlength="60">
+        <span id="saved" class="saved">Not saved</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="file-actions" role="group" aria-label="File">
+        <button id="btn-new" class="btn btn-ghost" type="button" title="New workflow"><span data-icon="file-plus"></span><span class="hide-md">New</span></button>
+        <button id="btn-open" class="btn btn-ghost" type="button" title="Open .mwf workflow (⌘O)"><span data-icon="folder-open"></span><span class="hide-md">Open</span></button>
+        <button id="btn-save" class="btn btn-ghost" type="button" title="Save .mwf workflow (⌘S)"><span data-icon="save"></span><span class="hide-md">Save</span></button>
+        <input id="flow-input" type="file" accept=".mwf,application/xml,text/xml" hidden>
+      </div>
+      <button id="btn-theme" class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode" title="Dark mode">
+        <span class="track"><span class="thumb"><span data-icon="sun" class="i-sun"></span><span data-icon="moon" class="i-moon"></span></span></span>
+      </button>
+      <button id="btn-panels" class="btn btn-ghost only-narrow" type="button" aria-label="Show History">
+        <span data-icon="history"></span>
+      </button>
+      <button id="btn-run" class="btn btn-primary" type="button"><span data-icon="play"></span><span>Run<span class="run-label"> workflow</span></span></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" aria-labelledby="lib-title">
+      <div class="panel-head">
+        <div class="row">
+          <h2 id="lib-title">Gallery</h2>
+          <div class="head-tools">
+            <button class="icon-btn" id="btn-scan" type="button" title="Look for new mockups in the folder" aria-label="Look for new mockups in the Gallery folder"><span data-icon="refresh"></span></button>
+            <button class="icon-btn" id="btn-reveal" type="button" title="Open the Gallery folder in Finder" aria-label="Open the Gallery folder in Finder"><span data-icon="folder"></span></button>
+          </div>
+        </div>
+        <p>Drag a mockup onto the canvas or click it to add it</p>
+      </div>
+      <div class="lib-scroll">
+        <label class="upload-card" id="psd-drop">
+          <input id="psd-input" type="file" accept=".psd,.psb" multiple hidden>
+          <span class="upload-icon" data-icon="upload"></span>
+          <span class="upload-text">
+            <strong>Add PSD mockup</strong>
+            <span id="psd-status">Copied to the Gallery folder</span>
+          </span>
+        </label>
+        <div id="library" class="library"><p class="loading-line">Loading the Gallery…</p></div>
+      </div>
+    </aside>
+
+    <main class="canvas-wrap" aria-label="Workflow canvas">
+      <div class="canvas" id="canvas">
+        <div class="sizer" id="sizer">
+          <div class="world" id="world">
+            <svg class="edges" id="edges" aria-hidden="true"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="canvas-tools" role="toolbar" aria-label="Canvas view">
+        <div class="zoom-group">
+          <button class="icon-btn" id="btn-undo" type="button" title="Undo (⌘Z)" aria-label="Undo" disabled><span data-icon="undo"></span></button>
+          <button class="icon-btn" id="btn-redo" type="button" title="Redo (⇧⌘Z)" aria-label="Redo" disabled><span data-icon="redo"></span></button>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-add-design" type="button"><span data-icon="image-plus"></span>Add design</button>
+        <button class="btn btn-outline btn-sm" id="btn-arrange" type="button"><span data-icon="grid"></span>Arrange nodes</button>
+        <div class="zoom-group">
+          <button class="icon-btn" id="zoom-out" type="button" aria-label="Zoom out"><span data-icon="minus"></span></button>
+          <span id="zoom-label" class="zoom-label" aria-live="polite">100 %</span>
+          <button class="icon-btn" id="zoom-in" type="button" aria-label="Zoom in"><span data-icon="plus"></span></button>
+          <button class="btn btn-ghost btn-sm" id="zoom-fit" type="button">Fit</button>
+        </div>
+      </div>
+      <div class="canvas-hint" id="canvas-hint" hidden>
+        <span data-icon="mouse"></span> Drag mockups from the Gallery to build the workflow
+      </div>
+      <div class="drop-veil" id="drop-veil" hidden>
+        <span data-icon="upload"></span>
+        <strong>Drop here</strong>
+        <span>PNG, SVG, JPG or WebP: designs (one per image). PSD: added to the Gallery. MWF: opens the workflow.</span>
+      </div>
+    </main>
+
+    <aside class="history" id="history" aria-labelledby="hist-title">
+      <div class="panel-head row">
+        <h2 id="hist-title"><span data-icon="history"></span>History</h2>
+        <span class="head-tools"><span class="count" id="run-count">0 runs</span>
+          <button class="icon-btn" id="btn-clear-runs" type="button" title="Clear history" aria-label="Clear history"><span data-icon="trash"></span></button>
+          <button class="icon-btn only-drawer" id="btn-close-history" type="button" aria-label="Close History"><span data-icon="x"></span></button></span>
+      </div>
+      <div class="hist-scroll" id="runs"><p class="loading-line">Loading History…</p></div>
+    </aside>
+  </div>
+
+  <!-- New workflow -->
+  <dialog id="new-dialog" class="sheet" aria-labelledby="new-title">
+    <form method="dialog" class="sheet-inner" id="new-form">
+      <header class="sheet-head">
+        <div>
+          <h2 id="new-title">New workflow</h2>
+          <p class="muted">Choose the mockups from the Gallery and the design you want to place on them.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close aria-label="Close"><span data-icon="x"></span></button>
+      </header>
+      <div class="sheet-body">
+        <label class="field">
+          <span class="field-label">Workflow name</span>
+          <input class="input" id="new-name" value="Untitled workflow" maxlength="60" required>
+        </label>
+
+        <section class="new-section" aria-labelledby="new-design-title">
+          <h3 id="new-design-title">Design</h3>
+          <div class="design-pick" id="new-designs"></div>
+        </section>
+
+        <section class="new-section" aria-labelledby="new-gal-title">
+          <div class="row">
+            <h3 id="new-gal-title">Mockups</h3>
+            <div class="gal-tools">
+              <input class="input input-sm" id="gal-search" type="search" placeholder="Search the Gallery" aria-label="Search the Gallery">
+              <button class="btn btn-ghost btn-sm" type="button" id="gal-all">Select all</button>
+            </div>
+          </div>
+          <div class="gallery" id="gallery"></div>
+        </section>
+      </div>
+      <section class="new-order" id="new-order" aria-labelledby="new-order-title" hidden>
+        <div class="order-head">
+          <h3 id="new-order-title">Order</h3>
+          <p class="muted" id="new-order-help">Drag to reorder, or select an item and use the arrow keys. Design 1 goes to the first Smart Object of each mockup; mockups are placed on the canvas in this order.</p>
+        </div>
+        <div class="order-row" id="order-designs-row">
+          <span class="order-label" id="order-designs-label">Designs</span>
+          <ol class="order-list" id="order-designs" data-kind="designs" aria-labelledby="order-designs-label" aria-describedby="new-order-help"></ol>
+        </div>
+        <div class="order-row" id="order-mockups-row">
+          <span class="order-label" id="order-mockups-label">Mockups</span>
+          <ol class="order-list" id="order-mockups" data-kind="mockups" aria-labelledby="order-mockups-label" aria-describedby="new-order-help"></ol>
+        </div>
+        <p class="sr-only" id="order-live" aria-live="polite"></p>
+      </section>
+      <footer class="sheet-foot">
+        <p class="muted" id="new-note">The current workflow will be replaced. To keep it, save it as .mwf first.</p>
+        <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+        <button class="btn btn-primary" type="submit" id="new-create" value="create">Create workflow</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Save before creating a new workflow -->
+  <dialog id="save-dialog" class="sheet confirm" aria-labelledby="save-title">
+    <div class="sheet-inner">
+      <div class="confirm-body">
+        <h2 id="save-title">Save changes?</h2>
+        <p class="muted" id="save-text"></p>
+      </div>
+      <footer class="sheet-foot">
+        <button class="btn btn-ghost" type="button" data-choice="discard">Don't save</button>
+        <span class="spacer"></span>
+        <button class="btn btn-ghost" type="button" data-choice="cancel">Cancel</button>
+        <button class="btn btn-primary" type="button" data-choice="save">Save</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- Mockup profile -->
+  <dialog id="profile-dialog" class="sheet" aria-labelledby="profile-title">
+    <form method="dialog" class="sheet-inner" id="profile-form">
+      <header class="sheet-head">
+        <div>
+          <h2 id="profile-title">Mockup profile</h2>
+          <p class="muted" id="profile-lead">Mockup characteristics. They are used as defaults when you add it to a workflow.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close aria-label="Close"><span data-icon="x"></span></button>
+      </header>
+      <div class="sheet-body" id="profile-body"></div>
+      <footer class="sheet-foot">
+        <p class="muted" id="profile-file"></p>
+        <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+        <button class="btn btn-primary" type="submit">Save profile</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- About -->
+  <dialog id="about-dialog" class="sheet about" aria-labelledby="about-title">
+    <div class="sheet-inner">
+      <div class="about-body">
+        <img src="/static/icon.png" alt="" width="96" height="96">
+        <h2 id="about-title">Mockup Workflow</h2>
+        <p class="about-version" id="about-version"></p>
+        <p class="about-lead">Place a design on several PSD mockups at once, without Photoshop.</p>
+        <dl class="about-facts" id="about-facts"></dl>
+      </div>
+      <footer class="sheet-foot">
+        <p class="muted" id="about-legal"></p>
+        <button class="btn btn-primary" type="button" data-close>Close</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- Viewer -->
+  <dialog id="viewer" class="viewer" aria-label="Result preview">
+    <div class="viewer-bar">
+      <strong id="viewer-title"></strong>
+      <span id="viewer-meta" class="muted"></span>
+      <a id="viewer-dl" class="btn btn-primary btn-sm" href="#"><span data-icon="download"></span>Download</a>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><span data-icon="x"></span></button>
+    </div>
+    <div id="viewer-frame" class="viewer-frame"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

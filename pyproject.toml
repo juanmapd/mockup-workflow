@@ -1,0 +1,20 @@
+[project]
+name = "mockup-workflow"
+dynamic = ["version"]
+description = "Place a design on many Photoshop mockups at once, without Photoshop."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Juanma PD", email = "juanmapd@gmail.com" }]
+requires-python = ">=3.9"
+
+# Dependencies live in requirements*.txt (pinned versions):
+#   requirements.txt      engine and server
+#   requirements-app.txt  Mac app (pywebview, PyInstaller)
+#   requirements-dev.txt  development (pytest)
+
+[tool.setuptools.dynamic]
+version = { attr = "version.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]
