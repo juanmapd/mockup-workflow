@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Install instructions:** since macOS 15, an app that is not notarized is allowed in System Settings >
+  Privacy & Security > Open Anyway (right-click > Open no longer works). Updated in the README and the project page.
+
 ## [1.0.0] - 2026-11-19
 
 First release.

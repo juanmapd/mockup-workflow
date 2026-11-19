@@ -3,6 +3,10 @@
 Place a design (a logo or a PNG artwork) on several Photoshop mockups at once and export the results, without
 opening Photoshop. It runs as a Mac app or in the browser, always locally.
 
+- **Project page:** <https://juanmapd.github.io/mockup-workflow/>
+- **Download for Mac:** [Mockup-Workflow-1.0.0-macOS.zip](https://github.com/juanmapd/mockup-workflow/releases/latest)
+  (for Macs with Apple silicon; not notarized by Apple, see [Installing the Mac app](#installing-the-mac-app)).
+
 - **Version:** the one in `version.py` (also shown in "About"). Changes in each version are listed in the [CHANGELOG](CHANGELOG.md).
 - **Author:** Juanma PD (juanmapd@gmail.com).
 - **License:** [MIT](LICENSE).
@@ -22,6 +26,22 @@ opening Photoshop. It runs as a Mac app or in the browser, always locally.
 - **Interface.** Run history, .zip download, and light and dark mode.
 - **Demo workflow.** When the app starts with no workflow open, it loads `Demo.mwf`: the Mockup Workflow logo and
   a white "MW" monogram on every mockup in the gallery.
+
+## Installing the Mac app
+
+The app runs on Macs with Apple silicon (M1 or later).
+
+1. Download the .zip and unzip it (Safari does it automatically).
+2. Drag `Mockup Workflow.app` to Applications. Do not open it from Downloads.
+3. Open it. The app is not notarized by Apple, so the first time macOS blocks it. Click **Done**.
+4. Go to **System Settings > Privacy & Security**, scroll down to the message about Mockup Workflow, click
+   **Open Anyway** and enter your password. From then on it opens normally.
+
+Since macOS 15 Sequoia, right-click > Open no longer skips this check. Alternatively, in Terminal:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Mockup Workflow.app"
+```
 
 ## Requirements
 
@@ -100,7 +120,8 @@ make check PSD=path.psd   # compares a PSD's render with Photoshop's composite
 | `mockup.py` | Command line |
 | `version.py` | Version, author and license: the single source used by the app, packaging and scripts |
 | `MockupWorkflow.spec` | PyInstaller packaging |
-| `scripts/` | Build (`build_app.sh`), release (`release.py`) and icon scripts |
+| `scripts/` | Build (`build_app.sh`), release (`release.py`), icon and project-page screenshot (`screenshots.py`) scripts |
+| `site/` | Project page, published to GitHub Pages by `.github/workflows/pages.yml` |
 | `tests/` | pytest tests |
 | `docs/` | [Architecture](docs/architecture.md), [.mwf file format](docs/file-format.md) and [mockup profile](docs/mockup-profile.md) |
 
@@ -117,8 +138,9 @@ How to work on the project (branches, commits, versions): [CONTRIBUTING.md](CONT
 
 ### Signing
 
-For personal use the app does not need to be signed: if macOS blocks it the first time, right-click > Open.
-To distribute it to other people it must be signed and notarized with an Apple Developer account.
+The app is built with an ad hoc signature only. For personal use that is enough: allow it once in System Settings
+(see [Installing the Mac app](#installing-the-mac-app)). To open without that warning on other Macs, it must be
+signed with a Developer ID and notarized, which needs an Apple Developer account.
 
 ## Known limitations
 

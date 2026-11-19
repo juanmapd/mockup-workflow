@@ -7,6 +7,11 @@ license = { text = "MIT" }
 authors = [{ name = "Juanma PD", email = "juanmapd@gmail.com" }]
 requires-python = ">=3.9"
 
+[project.urls]
+Homepage = "https://juanmapd.github.io/mockup-workflow/"
+Source = "https://github.com/juanmapd/mockup-workflow"
+Changelog = "https://github.com/juanmapd/mockup-workflow/blob/main/CHANGELOG.md"
+
 # Dependencies live in requirements*.txt (pinned versions):
 #   requirements.txt      engine and server
 #   requirements-app.txt  Mac app (pywebview, PyInstaller)

@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en" data-type="software" data-radius="soft" data-ground="sage" data-buttons="pill" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mockup Workflow: a Mac app that puts designs on PSD mockups</title>
+<meta name="description" content="Place a logo, PNG or SVG on several Photoshop mockups at once and export every result without opening Photoshop. Free and open source.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mockup Workflow: a Mac app that puts designs on PSD mockups">
+<meta property="og:description" content="One design on many Photoshop mockups, rendered on your Mac without Photoshop. Free, MIT license.">
+<meta property="og:url" content="https://juanmapd.github.io/mockup-workflow/">
+<meta property="og:image" content="https://juanmapd.github.io/mockup-workflow/img/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Mockup Workflow node canvas with a finished run">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://juanmapd.github.io/mockup-workflow/">
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400..600&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
+<!-- <html lang="en" data-radius="soft">; start.mjs brand (the client's own colors) with the nunito pairing (--force);
+     the family is the client's own Nunito Sans, the app's typeface, in place of the pairing's Nunito -->
+<style>
+:root {
+  --p-bg: #ffffff; --p-surface: #f2f2f4; --p-ink: #1c2030; --p-muted: #676d81;
+  --p-accent: #4a43e6; --p-accent-ink: #ffffff; --p-action: #4a43e6; --p-action-ink: #ffffff;
+  --p-inv-bg: #1c2030; --p-inv-surface: #292d3d; --p-inv-ink: #ffffff; --p-inv-muted: #a0a2aa;
+  --p-inv-accent: #ffffff; --p-inv-accent-ink: #1c2030; --p-inv-action: #ffffff; --p-inv-action-ink: #1c2030;
+  --font-display: "Nunito Sans", system-ui, sans-serif;
+  --font-text: "Nunito Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 400;
+  --display-tracking: -0.02em;
+  --display-tracking-xl: -0.03em;
+}
+</style>
+<link rel="stylesheet" href="assets/diagrams/diagram.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/liquid-hover/moment.js">
+<link rel="modulepreload" href="assets/moments/giant-type-pass/moment.js">
+<style>
+/* the logo: the app's three stacked layers on its indigo tile */
+.mw-mark { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--p-accent); color: #fff; flex: none; }
+.mw-mark svg { width: 18px; height: 18px; }
+.nav__logo { display: inline-flex; align-items: center; gap: 10px; }
+
+/* the app's own UI, rebuilt as small live fragments (the client's screens: static/app.js) */
+.mw-ui { --mw-line: rgb(28 32 48 / .1); --mw-soft: #f4f4f8; --mw-ind: #4a43e6; background: #fff; color: #1c2030; border-radius: 12px; font: 400 13px/1.4 "Nunito Sans", system-ui, sans-serif; box-shadow: 0 0 0 1px rgb(28 32 48 / .1), 0 18px 40px -22px rgb(28 32 48 / .45); overflow: hidden; text-align: left; }
+.mw-ui__head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--mw-line); }
+.mw-ui__head b { font-weight: 600; font-size: 14px; }
+.mw-ui__head small { color: #6e7489; font-size: 12px; }
+.mw-ui__head .mw-play { margin-left: auto; color: #6e7489; }
+.mw-ui__ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: #ecebfd; color: var(--mw-ind); flex: none; }
+.mw-ui__ico svg { width: 13px; height: 13px; }
+.mw-ui__body { padding: 12px 14px; display: grid; gap: 10px; }
+.mw-ui__label { font-size: 12px; color: #6e7489; font-weight: 500; }
+.mw-chips { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.mw-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px 2px 0; font-size: 13px; white-space: nowrap; }
+.mw-chip i { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--mw-ind); color: #fff; font: 600 12px/1 "Nunito Sans", sans-serif; font-style: normal; }
+.mw-chip img { width: 30px; height: 22px; border-radius: 4px; object-fit: cover; }
+.mw-chip.is-on { font-weight: 600; color: var(--mw-ind); }
+.mw-field { display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 10px; border: 1px solid var(--mw-line); border-radius: 8px; background: #fff; font-size: 13px; }
+.mw-field::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid #6e7489; border-bottom: 1.5px solid #6e7489; transform: translateY(-2px) rotate(45deg); }
+.mw-row { display: flex; align-items: center; gap: 8px; }
+.mw-row > .mw-field { flex: 1; }
+.mw-seg { display: inline-flex; border: 1px solid var(--mw-line); border-radius: 8px; overflow: hidden; }
+.mw-seg span { padding: 6px 10px; font-size: 12px; border-left: 1px solid var(--mw-line); }
+.mw-seg span:first-child { border-left: 0; }
+.mw-seg span.is-on { background: #ecebfd; color: var(--mw-ind); font-weight: 600; }
+.mw-rot { font-size: 12px; color: #6e7489; padding: 6px 8px; border: 1px solid var(--mw-line); border-radius: 8px; }
+.mw-dots { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #6e7489; }
+.mw-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--mw-line); }
+.mw-dot--light { background: #fff; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--mw-ind); }
+.mw-dot--dark { background: #1c2030; }
+.mw-dot--orig { background: conic-gradient(#e2574c, #f2b632, #3bb273, #4a90d9, #e2574c); }
+.mw-so { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--mw-line); border-radius: 10px; background: var(--mw-soft); }
+.mw-so__t { display: flex; justify-content: space-between; font-size: 12px; } .mw-so__t b { font-weight: 600; } .mw-so__t span { color: #6e7489; }
+.mw-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.mw-thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; display: block; }
+.mw-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--mw-line); border-radius: 8px; font-size: 13px; font-weight: 600; width: fit-content; }
+.mw-btn svg { width: 14px; height: 14px; }
+
+/* the hero: the New workflow dialog in a Mac window, cut by the frame; the run history card over it */
+.mw-win { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgb(28 32 48 / .1), 0 30px 70px -30px rgb(28 32 48 / .5); }
+.mw-win__bar { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 14px; border-bottom: 1px solid rgb(28 32 48 / .08); font: 500 13px/1 "Nunito Sans", sans-serif; color: #5d6274; }
+.mw-win__dots { display: flex; gap: 6px; } .mw-win__dots i { width: 10px; height: 10px; border-radius: 50%; background: #dcdfe6; }
+.mw-win img { display: block; width: 100%; height: auto; }
+.hero__art > .ly-piece--note { left: var(--s-6); bottom: var(--s-6); width: 300px; z-index: 2; }
+.mw-run { padding: 0; }
+.mw-run .mw-ui__head .mw-ok-chip { margin-left: auto; }
+.mw-ok-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 99px; background: #e5f5ec; color: #17673f; font-size: 12px; font-weight: 600; }
+.mw-line { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid rgb(28 32 48 / .07); font-size: 13px; }
+.mw-line:first-of-type { border-top: 0; }
+.mw-line span { flex: 1; } .mw-line em { font-style: normal; color: #6e7489; }
+.mw-line svg { width: 16px; height: 16px; color: #17673f; flex: none; }
+@media (max-width: 1023px) { .hero__art > .ly-piece--note { left: var(--s-4); bottom: var(--s-4); width: 270px; } }
+
+/* steps: one panel height for the three cards */
+#how .panel { --p-h: 380px; }
+#how .stage > .at-rise { --ay: 32px; --ay-sm: 16px; }
+@media (max-width: 639px) { #how .panel { --p-h: 270px; } }
+
+/* results: three results in one row on the page's columns */
+.wall { margin-top: var(--s-7); }
+.wall > figure { margin: 0; position: relative; overflow: hidden; border-radius: var(--r-lg); aspect-ratio: 5 / 6; background: var(--surface); }
+.wall > figure > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 640px) and (max-width: 1023px) { .wall.grid > figure { grid-column: auto / span 6; aspect-ratio: 4 / 3; } .wall.grid > figure:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; } }
+@media (max-width: 639px) { .wall { row-gap: var(--s-3); } .wall > figure { aspect-ratio: 4 / 3; } }
+
+/* the canvas: the app's own screenshot across the wrap, cut by the frame's foot */
+.mw-shot { margin-top: var(--s-7); border-radius: var(--r-lg); overflow: hidden; border: 1px solid rgb(255 255 255 / .12); position: relative; background: #161925; }
+.mw-shot > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 0 0; }
+.mw-shot > img[hidden] { display: none; }
+.mw-canvas-head .tabs { margin-top: var(--s-5); }
+@media (max-width: 639px) { .mw-shot > img { object-position: 30% 0; } }
+
+/* the profile dialog in the split frame */
+.mw-dialog { width: 760px; max-width: none; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgb(28 32 48 / .1), 0 24px 60px -28px rgb(28 32 48 / .5); background: #fff; }
+.mw-dialog img { display: block; width: 100%; height: auto; }
+
+/* install: the commands as a terminal */
+.mw-term { background: #161925; color: #e6e8f0; border-radius: 12px; font: 400 13px/1.7 var(--font-mono); padding: 0 0 18px; box-shadow: 0 24px 60px -28px rgb(0 0 0 / .6); overflow: hidden; }
+.mw-term__bar { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-bottom: 1px solid rgb(255 255 255 / .08); color: #a0a5b8; font: 500 12px/1 var(--font-text); }
+.mw-term__bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a3f52; }
+.mw-term__bar span { margin-left: 8px; }
+.mw-term pre { margin: 0; padding: 14px 18px 0; white-space: pre-wrap; word-break: break-all; font: inherit; }
+.mw-term .p { color: #a29dff; } .mw-term .c { color: #8e94a8; }
+.mw-steps { list-style: none; padding: 0; margin: var(--s-6) 0 0; counter-reset: s; display: grid; }
+.mw-steps li { counter-increment: s; display: grid; grid-template-columns: 32px 1fr; gap: var(--s-3); padding: var(--s-4) 0; border-bottom: 1px solid var(--line); font-size: var(--t-body); line-height: 1.55; }
+.mw-steps li::before { content: counter(s); font: 500 var(--t-small)/1.9 var(--font-text); color: var(--muted); }
+.mw-steps code, .faq code { font: 400 .92em var(--font-mono); }
+
+.close__word { font-size: clamp(40px, 9.4vw, 136px); line-height: 1.05; padding-top: .06em; }
+@media (max-width: 1023px) { .mw-facts > li { display: grid; gap: 2px; justify-items: start; } .mw-facts .rows__value { text-align: left; } }
+.mw-icons { display: flex; gap: var(--s-4); margin-top: var(--s-6); }
+#engine .frame, #install .frame, #profiles .frame { --ratio: 92%; }
+@media (max-width: 639px) { #engine .frame, #install .frame, #profiles .frame { --ratio: 100%; } }
+#design .mo-gt__row { margin-top: var(--s-9); }
+@media (min-width: 640px) and (max-width: 1023px) { #design .mo-gt__type { font-size: 17.5vw; } }
+@media (max-width: 639px) { .nav__bar .nav__logo .mw-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+@media (min-width: 640px) and (max-width: 1279px) { #how { --h: 2; } }
+@media (min-width: 1280px) and (max-height: 800px) { #how .panel { --p-h: 268px; } }
+@media (max-width: 639px) { .close__word { font-size: clamp(30px, 10.4vw, 44px); } }
+</style>
+</head>
+<body>
+<!-- type: software
+     deal: hero collage, nav nav-centre, close close-word, footer footer-columns, rhythm dark-band, buttons pill,
+     mark wordmark (the client's own logo replaces it), ground sage, effect fluted-glass (the hero frame, held still),
+     card ground silk-folds (the three steps panels), grounds none
+     palette: start.mjs brand, the client's own indigo #4a43e6 on white with ink #1c2030 (the app's colors)
+     moments: liquid-hover in #results (the pointer moves the water over a real render: the results are the product),
+              giant-type-pass in #design (the statement, one real result passing through the letters) -->
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top"><span class="mw-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3,16.5 6.2,14.9 12,17.8 17.8,14.9 21,16.5 12,21" fill="currentColor"/><polygon points="3,12 6.2,10.4 12,13.3 17.8,10.4 21,12 12,16.5" fill="currentColor"/><polygon points="3,7.5 12,3 21,7.5 12,12" fill="currentColor"/></svg></span><span class="mw-name">Mockup Workflow</span></a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item">
+        <a class="nav__link" href="#how">Workflow <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="nav__menu">
+          <div class="wrap grid">
+            <div class="menu-col span-3">
+              <p class="t-label">Workflow</p>
+              <a href="#how">Three steps<span>Pick, adjust, run</span></a>
+              <a href="#canvas">Node canvas<span>One node per mockup</span></a>
+              <a href="#profiles">Mockup profiles<span>Defaults saved per PSD</span></a>
+            </div>
+            <div class="menu-col span-3">
+              <p class="t-label">Output</p>
+              <a href="#results">Results<span>4000 × 3000 PNG files</span></a>
+              <a href="#engine">Engine<span>What it renders from a PSD</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav__item"><a class="nav__link" href="#results">Results</a></div>
+      <div class="nav__item"><a class="nav__link" href="#engine">Engine</a></div>
+      <div class="nav__item"><a class="nav__link" href="#install">Install</a></div>
+      <div class="nav__item"><a class="nav__link" href="#faq">Questions</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="nav__link" href="https://github.com/juanmapd/mockup-workflow">GitHub</a>
+      <a class="btn btn--primary" href="https://github.com/juanmapd/mockup-workflow/releases/download/v1.0.0/Mockup-Workflow-1.0.0-macOS.zip">Download for Mac</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero hero--collage" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text grid hero__grid">
+      <div class="hero__text span-5">
+        <h1 id="hero-h">Mac app that puts designs on PSD mockups</h1>
+        <p class="hero__lead">Pick the Photoshop mockups and a logo, PNG or SVG. Mockup Workflow fills every Smart Object and exports the results, without opening Photoshop.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="https://github.com/juanmapd/mockup-workflow/releases/download/v1.0.0/Mockup-Workflow-1.0.0-macOS.zip">Download for Mac<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="https://github.com/juanmapd/mockup-workflow">See the code on GitHub</a></div>
+        <p class="hero__proof">Version 1.0.0, 19 November 2026. Free and open source, MIT license.</p>
+      </div>
+      <div class="hero__art span-6 start-7" data-fx="fluted-glass" data-fx-seed="43" data-fx-palette='{"bg":"#cdd6c6","surface":"#dce3d6","ink":"#262d24","accent":"#6c8e63"}' data-fx-params='{"speed":0,"calmX":0.3,"calmY":0.75}' role="img" aria-label="Mockup Workflow's New workflow dialog with demo.png chosen and four mockups in order, and a finished run of six mockups in 28.3 seconds">
+        <!-- CLIENT FILE screenshot: img/new-workflow.webp (the New workflow dialog, from the app at 2x) -->
+        <div class="ly-piece ly-piece--main mw-win" aria-hidden="true">
+          <div class="mw-win__bar"><span class="mw-win__dots"><i></i><i></i><i></i></span><span>Mockup Workflow · New workflow</span></div>
+          <img src="img/new-workflow.webp" alt="" width="1300" height="1359" fetchpriority="high">
+        </div>
+        <div class="ly-piece ly-piece--note mw-ui mw-run" aria-hidden="true" data-ly-steps="700">
+          <div class="mw-ui__head"><b>Full run</b><span class="mw-ok-chip" data-step data-step-at="4">completed</span></div>
+          <div class="mw-line" data-step><span>Glass shop window</span><em>4.9 s</em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.7 2.7L16 9.8"/></svg></div>
+          <div class="mw-line" data-step><span>Poster wall</span><em>3.1 s</em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.7 2.7L16 9.8"/></svg></div>
+          <div class="mw-line" data-step><span>6 mockups</span><em>28.3 s</em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.7 2.7L16 9.8"/></svg></div>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="how" style="--hm: 2" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="how-h">From PSD to PNG in three steps. <span class="muted">Photoshop stays closed.</span></h2>
+      </div>
+      <div class="grid">
+        <article class="card card--row card--open span-4 m-nolift">
+          <span class="step-num">1</span>
+          <h3>Pick mockups and designs</h3>
+          <p>Choose PSDs from the Gallery and one or more designs. Design 2 goes to each mockup's second Smart Object.</p>
+          <div class="panel" data-fx="silk-folds" data-fx-seed="11" data-fx-palette='{"bg":"#cdd6c6","surface":"#dce3d6","ink":"#262d24","accent":"#6c8e63"}' data-fx-params='{"speed":0}' role="img" aria-label="The Order bar: two designs and four mockups numbered in the order they are placed">
+            <div class="stage stage--fade-b"><div class="at-rise fit" style="--fit-max:330px">
+              <div class="mw-ui" aria-hidden="true">
+                <div class="mw-ui__head"><b>Order</b><small>drag or use the arrow keys</small></div>
+                <div class="mw-ui__body">
+                  <span class="mw-ui__label">Designs</span>
+                  <div class="mw-chips"><span class="mw-chip is-on"><i>1</i>demo.png</span><span class="mw-chip"><i>2</i>demo.svg</span></div>
+                  <span class="mw-ui__label">Mockups</span>
+                  <div class="mw-chips">
+                    <span class="mw-chip"><i>1</i><img src="img/c-shop-window-awning.webp" alt="" width="64" height="48" loading="lazy">Shop window</span>
+                    <span class="mw-chip"><i>2</i><img src="img/c-glass-shop-window.webp" alt="" width="64" height="48" loading="lazy">Glass shop window</span>
+                    <span class="mw-chip"><i>3</i><img src="img/c-coffee-cup.webp" alt="" width="64" height="48" loading="lazy">Coffee cup</span>
+                    <span class="mw-chip"><i>4</i><img src="img/c-poster-wall.webp" alt="" width="64" height="48" loading="lazy">Poster wall</span>
+                  </div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </article>
+        <article class="card card--row card--open span-4 m-nolift">
+          <span class="step-num">2</span>
+          <h3>Adjust each Smart Object</h3>
+          <p>On the node canvas, set the linked design, the fit, the rotation and a light, dark or original color.</p>
+          <div class="panel" data-fx="silk-folds" data-fx-seed="27" data-fx-palette='{"bg":"#c6d3df","surface":"#d6e0e9","ink":"#25303a","accent":"#7f9fbd"}' data-fx-params='{"speed":0,"tone":1}' role="img" aria-label="A mockup node: the window Smart Object linked to demo.png, fit set to Contain, rotation 0 degrees, color light">
+            <div class="stage stage--fade-b"><div class="at-rise fit" style="--fit-max:330px">
+              <div class="mw-ui" aria-hidden="true">
+                <div class="mw-ui__head"><span class="mw-ui__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8"/><path d="M12 18v4"/></svg></span><b>Shop window with awning</b><span class="mw-play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z" fill="currentColor"/></svg></span></div>
+                <div class="mw-ui__body">
+                  <div class="mw-so">
+                    <div class="mw-so__t"><b>Window Design</b><span>9:7 · 2700×2100</span></div>
+                    <div class="mw-field">Design 1: demo.png</div>
+                    <div class="mw-row"><span class="mw-seg"><span class="is-on">Contain</span><span>Cover</span><span>Stretch</span></span><span class="mw-rot">0°</span></div>
+                    <div class="mw-dots"><span class="mw-dot mw-dot--light"></span><span class="mw-dot mw-dot--dark"></span><span class="mw-dot mw-dot--orig"></span><span>Light</span></div>
+                  </div>
+                  <div class="mw-so">
+                    <div class="mw-so__t"><b>Awning Design</b><span>23:9 · 2780×1088</span></div>
+                    <div class="mw-field">Design 2: demo.svg</div>
+                  </div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </article>
+        <article class="card card--row card--open span-4 m-nolift">
+          <span class="step-num">3</span>
+          <h3>Run and download</h3>
+          <p>Run workflow renders every mockup. Save PNG or JPG at 100, 50 or 25 %, or everything as a .zip.</p>
+          <div class="panel" data-fx="silk-folds" data-fx-seed="53" data-fx-palette='{"bg":"#d9ccb7","surface":"#e9e0d2","ink":"#2a2622","accent":"#a8794a"}' data-fx-params='{"speed":0}' role="img" aria-label="The Export node: PNG at 100 percent, six finished results and the Download all button">
+            <div class="stage stage--fade-b"><div class="at-rise fit" style="--fit-max:330px">
+              <div class="mw-ui" aria-hidden="true">
+                <div class="mw-ui__head"><span class="mw-ui__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span><b>Export</b></div>
+                <div class="mw-ui__body">
+                  <div class="mw-row"><div class="mw-field">PNG</div><div class="mw-field">100 %</div></div>
+                  <div class="mw-thumbs">
+                    <img loading="lazy" width="192" height="144" src="img/t-glass-shop-window.webp" alt=""><img loading="lazy" width="192" height="144" src="img/t-coffee-cup.webp" alt=""><img loading="lazy" width="192" height="144" src="img/t-shop-window-awning.webp" alt="">
+                    <img loading="lazy" width="192" height="144" src="img/t-poster-wall.webp" alt=""><img loading="lazy" width="192" height="144" src="img/t-square-sign.webp" alt=""><img loading="lazy" width="192" height="144" src="img/t-stand-sign.webp" alt="">
+                  </div>
+                                    <span class="mw-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Download all (.zip)</span>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="results" aria-labelledby="results-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="results-h">Results from one run. <span class="muted">Each one is a 4000 × 3000 PNG.</span></h2>
+      </div>
+      <div class="wall grid">
+        <!-- CLIENT FILE results: img/*.webp, real composites rendered by the app from the Demo workflow -->
+        <figure class="span-4 mo-lq" data-moment="liquid-hover" data-moment-opts='{"strength": 0.7}'>
+          <img src="img/glass-shop-window-1280.webp" srcset="img/glass-shop-window-640.webp 640w, img/glass-shop-window-1280.webp 1280w" sizes="(max-width: 639px) 342px, 700px" alt="A glass shop window in a stone wall carrying the Mockup Workflow logo in white" width="1280" height="960" loading="lazy" style="object-position: 30% 50%">
+        </figure>
+        <figure class="span-4"><img src="img/poster-wall-640.webp" srcset="img/poster-wall-640.webp 640w, img/poster-wall-1280.webp 1280w" sizes="(max-width: 639px) 342px, 700px" alt="A poster frame on a stone wall holding the Mockup Workflow logo" width="640" height="480" loading="lazy" style="object-position: 38% 50%"></figure>
+        <figure class="span-4"><img src="img/stand-sign-640.webp" srcset="img/stand-sign-640.webp 640w, img/stand-sign-1280.webp 1280w" sizes="(max-width: 639px) 342px, 700px" alt="A hanging stand sign beside a plant with the Mockup Workflow logo" width="640" height="480" loading="lazy" style="object-position: 55% 50%"></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section ground-inverse" id="canvas" aria-labelledby="canvas-h">
+    <div class="wrap">
+      <div class="grid mw-canvas-head">
+        <h2 id="canvas-h" class="span-5">The node canvas, one node per mockup</h2>
+        <div class="span-6 start-7">
+          <p class="t-lead">Designs on the left, mockups in the middle, the run history with every result on the right. ▶ on a node renders that mockup alone.</p>
+          <div class="tabs" role="tablist" aria-label="Appearance">
+            <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="shot-dark">Show dark mode</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="shot-light">Show light mode</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame mw-shot fill" role="img" aria-label="Mockup Workflow's main window: the Gallery of PSD mockups, the node canvas with two designs linked to six mockups, and the history of a full run with its six results">
+        <!-- CLIENT FILE screenshots: img/canvas-dark.webp and img/canvas-light.webp (the Demo workflow after a full run) -->
+        <img id="shot-dark" role="tabpanel" src="img/canvas-dark.webp" srcset="img/canvas-dark-800.webp 800w, img/canvas-dark-1200.webp 1200w, img/canvas-dark.webp 2400w" sizes="(max-width: 1023px) 100vw, 1280px" alt="" width="2400" height="1447" loading="lazy">
+        <img id="shot-light" role="tabpanel" src="img/canvas-light.webp" srcset="img/canvas-light-800.webp 800w, img/canvas-light-1200.webp 1200w, img/canvas-light.webp 2400w" sizes="(max-width: 1023px) 100vw, 1280px" alt="" width="2400" height="1447" loading="lazy" hidden>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="engine" aria-labelledby="engine-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-5 split-col">
+          <h2 id="engine-h">Renders the PSD the way Photoshop does</h2>
+          <p class="t-lead">The engine reproduces Smart Object perspective and warps, blend modes, masks, Levels, Curves, shadows, glows and blur filters.</p>
+          <ul class="mw-facts rows">
+            <li><span class="rows__name">0.3 to 0.5 out of 255</span><span class="rows__value">mean error against Photoshop's own composite</span></li>
+            <li><span class="rows__name">Custom mesh, quilt, Cylinder</span><span class="rows__value">warps it follows</span></li>
+            <li><span class="rows__name">A warning, never a gap</span><span class="rows__value">for features it does not support</span></li>
+          </ul>
+          <a class="link" href="https://github.com/juanmapd/mockup-workflow/blob/main/CHANGELOG.md">Read the changelog</a>
+        </div>
+        <div class="frame frame--split frame--lit span-6 start-7">
+          <div class="dg" data-diagram='{"layout":"lanes","curve":"curve","alt":"One design goes into the Mockup Workflow engine, which renders three PSD mockups side by side and packs the results into a zip file.","input":{"label":"Design","icon":"svg","meta":"demo.svg"},"core":{"label":"Engine","icon":"ui:layers"},"lanes":[{"label":"Shop window","icon":"psd","meta":"4.9 s","done":true},{"label":"Poster","icon":"psd","meta":"3.1 s","done":true},{"label":"Cup","icon":"psd","meta":"4.6 s","done":true}],"output":{"label":"Results","icon":"zip","done":true}}'></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="design" data-moment="giant-type-pass" data-moment-opts='{"image": "../../../img/shop-window-awning-1280.webp", "travel": 40, "focusY": 36}' aria-labelledby="design-h">
+    <div class="wrap">
+      <h2 class="mo-gt__type" id="design-h">One design,<br>every mockup</h2>
+      <div class="mo-gt__row"><p>Drop in a PNG or an SVG once. SVGs are rasterized at up to 4000 px with their transparency kept.</p><a class="link" href="#results">See the six results</a></div>
+    </div>
+  </section>
+
+  <section class="section" id="profiles" aria-labelledby="profiles-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-5 split-col">
+          <h2 id="profiles-h">A profile for every mockup</h2>
+          <p class="t-lead">The first analysis of a PSD saves a .mockup.json next to it: the aspect ratio, warp, perspective, instances and the full layer list.</p>
+          <p>It also suggests a logo color from the surface's brightness, a transparent logo or a full-bleed design, and a fit and rotation. Change any of it in the app.</p>
+          <a class="link" href="#canvas">See the node canvas</a>
+        </div>
+        <div class="frame frame--split span-6 start-7" role="img" aria-label="The Mockup profile dialog for the shop window with awning: two Smart Objects, each with its detected logo color, design layer, fit and rotation">
+          <!-- CLIENT FILE screenshot: img/profile.webp (the Mockup profile dialog) -->
+          <div class="stage stage--fade-br"><div class="at-corner to-edge" style="--ax:56px;--ay:56px">
+            <div class="mw-dialog" aria-hidden="true"><img src="img/profile.webp" alt="" width="1600" height="1274" loading="lazy"></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="install" aria-labelledby="install-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-5">
+          <h2 id="install-h">Install the app or build it</h2>
+          <ol class="mw-steps">
+            <li>Unzip the download and drag Mockup Workflow.app to Applications.</li>
+            <li>It is not notarized by Apple, so macOS blocks the first launch. Open System Settings &gt; Privacy &amp; Security and click Open Anyway.</li>
+            <li>The first launch creates ~/Documents/Mockup Workflow with Mockup Gallery, Flows and data.</li>
+            <li>Copy your PSDs into Mockup Gallery. Each subfolder is a group.</li>
+          </ol>
+        </div>
+        <div class="frame frame--split frame--lit span-6 start-7" role="img" aria-label="Terminal commands to build Mockup Workflow from source and run it in the browser or as a Mac app">
+          <div class="stage"><div class="at-rise fit" style="--fit-max:520px;--ay:56px">
+            <div class="mw-term" aria-hidden="true">
+              <div class="mw-term__bar"><i></i><i></i><i></i><span>From source · macOS, Python 3.9+</span></div>
+<pre><span class="p">$</span> xcode-select --install
+<span class="p">$</span> git clone https://github.com/juanmapd/mockup-workflow.git
+<span class="p">$</span> cd mockup-workflow
+<span class="p">$</span> make setup
+<span class="p">$</span> make run     <span class="c"># browser at 127.0.0.1:5173</span>
+<span class="p">$</span> make build   <span class="c"># dist/Mockup Workflow.app</span></pre>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-5 stack-4">
+          <h2 id="faq-h">Questions</h2>
+          <p>Something else, or a bug in a PSD of yours? Open an issue on GitHub.</p>
+          <a class="link" href="https://github.com/juanmapd/mockup-workflow/issues">Open an issue</a>
+          <div class="mw-icons" role="img" aria-label="GitHub, macOS and Photoshop files">
+            <span class="ic-tile"><img class="ic ic-40 ic-ink" loading="lazy" src="assets/icons/github.svg" alt="" width="40" height="39"></span>
+            <span class="ic-tile"><img class="ic ic-40 ic-ink" loading="lazy" src="assets/icons/apple.svg" alt="" width="33" height="40"></span>
+            <span class="ic-tile"><img class="ic ic-40" loading="lazy" src="assets/icons/psd.svg" alt="" width="40" height="40"></span>
+          </div>
+        </div>
+        <div class="faq span-6 start-7">
+          <div class="faq__item"><h3>What does Mockup Workflow cost?</h3><p>Nothing. Mockup Workflow is free and open source under the MIT license.</p></div>
+          <div class="faq__item"><h3>Does the app need Photoshop?</h3><p>No. It reads the PSD and renders its Smart Objects itself.</p></div>
+          <div class="faq__item"><h3>Does the app run on Windows?</h3><p>No. The app is for macOS only; built from source it also runs in your browser on a Mac.</p></div>
+          <div class="faq__item"><h3>Are my PSD files uploaded?</h3><p>No. Everything stays on your Mac: no upload, no account.</p></div>
+          <div class="faq__item"><h3>Which PSD features can't it render?</h3><p>Other smart filters, Hue/Saturation, Gradient Map and Arc or Flag warps. The mockup still renders, with a warning in the history.</p></div>
+          <div class="faq__item"><h3>Can I share a workflow file?</h3><p>Save it as a .mwf file, XML with the designs embedded, and open it again or send it on.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--word">
+      <div class="section-head--split">
+        <div><h2 id="close-h">Get Mockup Workflow 1.0.0</h2><p class="t-lead">Free for macOS. Unzip it, drag it to Applications, open it.</p></div>
+        <a class="btn btn--primary" href="https://github.com/juanmapd/mockup-workflow/releases/download/v1.0.0/Mockup-Workflow-1.0.0-macOS.zip">Download for Mac<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+      </div>
+      <p class="close__word" aria-hidden="true">Mockup Workflow</p>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="#top"><span class="mw-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="3,16.5 6.2,14.9 12,17.8 17.8,14.9 21,16.5 12,21" fill="currentColor"/><polygon points="3,12 6.2,10.4 12,13.3 17.8,10.4 21,12 12,16.5" fill="currentColor"/><polygon points="3,7.5 12,3 21,7.5 12,12" fill="currentColor"/></svg></span>Mockup Workflow</a>
+          <p class="footer__lede">Designs on PSD mockups, on your Mac.</p>
+        </div>
+        <div class="span-2 start-7 footer__col"><h3>Workflow</h3><ul><li><a href="#how">Three steps</a></li><li><a href="#canvas">Node canvas</a></li><li><a href="#profiles">Profiles</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Output</h3><ul><li><a href="#results">Results</a></li><li><a href="#engine">Engine</a></li><li><a href="#install">Install</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Project</h3><ul><li><a href="https://github.com/juanmapd/mockup-workflow">Source code</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/releases/tag/v1.0.0">Release 1.0.0</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/blob/main/CHANGELOG.md">Changelog</a></li><li><a href="https://github.com/juanmapd/mockup-workflow/issues">Issues</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 Juanma PD &nbsp; MIT license</span>
+        <div class="socials"></div>
+        <span>Product names and logos are trademarks of their owners</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script type="module" src="assets/diagrams/mount.js"></script>
+</body>
+</html>

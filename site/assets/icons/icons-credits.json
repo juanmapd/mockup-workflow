@@ -1,0 +1,70 @@
+[
+  {
+    "file": "apple.svg",
+    "icon": "logos:apple",
+    "name": "Apple",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://www.apple.com/"
+  },
+  {
+    "file": "github.svg",
+    "icon": "logos:github-icon",
+    "name": "GitHub",
+    "kind": "colour",
+    "source": "gilbarbara/logos@d6960edc1b7309d392c76e40d3a320df7f9ff85c",
+    "author": "Gil Barbara",
+    "licence": "CC0-1.0",
+    "url": "https://github.com/gilbarbara/logos",
+    "trademark": true,
+    "markUrl": "https://github.com/"
+  },
+  {
+    "file": "psd.svg",
+    "icon": "file:file-type-photoshop",
+    "name": "Photoshop file",
+    "kind": "colour",
+    "source": "@iconify-json/vscode-icons@1.2.30",
+    "author": "Roberto Huertas",
+    "licence": "MIT",
+    "url": "https://github.com/vscode-icons/vscode-icons",
+    "trademark": false
+  },
+  {
+    "file": "svg.svg",
+    "icon": "file:file-type-svg",
+    "name": "SVG",
+    "kind": "colour",
+    "source": "@iconify-json/vscode-icons@1.2.30",
+    "author": "Roberto Huertas",
+    "licence": "MIT",
+    "url": "https://github.com/vscode-icons/vscode-icons",
+    "trademark": false
+  },
+  {
+    "file": "ui-layers.svg",
+    "icon": "ui:layers",
+    "name": "Layers",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "zip.svg",
+    "icon": "file:file-type-zip",
+    "name": "ZIP archive",
+    "kind": "colour",
+    "source": "@iconify-json/vscode-icons@1.2.30",
+    "author": "Roberto Huertas",
+    "licence": "MIT",
+    "url": "https://github.com/vscode-icons/vscode-icons",
+    "trademark": false
+  }
+]

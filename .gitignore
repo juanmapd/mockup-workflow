@@ -22,3 +22,8 @@ Flujos/
 .DS_Store
 .claude/
 .impeccable/
+
+# Project page: design-check working files (only site/index.html, img/ and assets/ are published)
+site/.taste-skill/
+site/shots/
+.taste-skill/
